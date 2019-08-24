@@ -72,12 +72,14 @@ rp(options)
         .attr();
 
       if (typeof uri !== 'undefined') {
+        // @TODO use the serie ID to store a proper array
         const serieUrl = `${baseSerieUrl}${uri.series_collect_id}`;
         uris.push(serieUrl);
       }
     });
 
     uris.forEach(el => {
+      // @TODO use Promises to fetch all at once, get the result here
       fetchSerie(el);
     });
   })
