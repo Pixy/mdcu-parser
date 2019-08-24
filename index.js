@@ -2,8 +2,9 @@
 
 const rp = require('request-promise');
 const cheerio = require('cheerio');
-const baseUrl =
-  'https://www.mdcu-comics.fr/comics/editeur-01-panini-comics/collection-469-marvel-now/';
+
+const baseSerieUrl =
+  'https://www.mdcu-comics.fr/includes/comics/inc_liste_comics_vf.php?series_collect_id=';
 
 const options = {
   uri:
@@ -13,39 +14,71 @@ const options = {
   },
 };
 
-let uris = [];
+const uris = [];
+const collections = [];
 
-const fetchUri = uri => {
-  const url = baseUrl + uri;
-  console.log(url);
-  // rp({
-  //   `${baseUrl}${uri}`,
-  //   transform(body) {
-  //     return cheerio.load(body);
-  //   },
-  // })
-  //   .then($ => {
-  //     console.log($);
-  //   })
-  //   .catch(err => {
-  //     console.log(err);
-  //   });
+const fetchBook = async url => {
+  const response = await rp({
+    url,
+    transform(body) {
+      return cheerio.load(body);
+    },
+  });
+
+  return Promise.resolve(response);
+};
+
+const fetchSerie = url => {
+  rp({
+    url,
+    transform(body) {
+      return cheerio.load(body);
+    },
+  })
+    .then($ => {
+      const titleSerie = $('h4.page-header span')
+        .text()
+        .replace('Marvel NOW!', '');
+
+      if (typeof collections[titleSerie] === 'undefined') {
+        collections[titleSerie] = [];
+      }
+
+      $('div.col-4 > div > div:nth-child(2) > a').each((_, el) => {
+        const bookUrl = $(el).attr().href;
+        fetchBook(bookUrl).then(r => {
+          const title = r('.widget-item > h4:nth-child(1)').text();
+          const date = r('.meta')
+            .text()
+            .replace('Sortie le ', '');
+
+          collections[titleSerie].push({
+            title,
+            date,
+          });
+        });
+      });
+    })
+    .catch(err => {
+      console.log(err);
+    });
 };
 
 rp(options)
   .then($ => {
-    $('div.p-y-5').each(function(_, el) {
-      const uri = $(this)
+    $('div.p-y-5').each((_, el) => {
+      const uri = $(el)
         .find('button')
         .attr();
+
       if (typeof uri !== 'undefined') {
-        const serieUrl = `serie-${uri.series_collect_id}-${uri['data-url']}/`;
+        const serieUrl = `${baseSerieUrl}${uri.series_collect_id}`;
         uris.push(serieUrl);
       }
     });
 
     uris.forEach(el => {
-      fetchUri(el);
+      fetchSerie(el);
     });
   })
   .catch(err => {
