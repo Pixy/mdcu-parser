@@ -1,0 +1,19 @@
+{
+  "name": "mdcu-parser",
+  "version": "1.0.0",
+  "description": "mdcu parser for scrap books list",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/Pixy/mdcu-parser.git"
+  },
+  "author": "Pierre-Alexis GODET",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Pixy/mdcu-parser/issues"
+  },
+  "homepage": "https://github.com/Pixy/mdcu-parser#readme"
+}
