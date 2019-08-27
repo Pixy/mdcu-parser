@@ -46,7 +46,7 @@ const fetchSeries = async () => {
       .attr();
 
     // Save IDs and urls in array
-    if (typeof attrs !== 'undefined') {
+    if (attrs !== undefined) {
       const serieUrl = `${baseSerieUrl}${attrs.series_collect_id}`;
       series.push({
         id: attrs.series_collect_id,
@@ -173,7 +173,7 @@ const fetchBookDetails = async url => {
 
 fetchSeries().then(async series => {
   const serie = series[0];
-  const volumesSerie = await fetchVolumesSerie(serie).then(volumes => volumes);
+  const volumesSerie = await fetchVolumesSerie(serie);
   const bookUrl = volumesSerie.shift().booksUrls[0];
 
   const bookDetails = await fetchBookDetails(bookUrl);
