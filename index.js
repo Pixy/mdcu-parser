@@ -25,16 +25,13 @@ const fetchBook = async url => {
   return Promise.resolve(response);
 };
 
-const fetchVolumes = async serie => {
-  const response = await rp({
+const fetchVolumes = serie =>
+  rp({
     uri: serie.url,
     transform(body) {
       return cheerio.load(body);
     },
   });
-
-  return Promise.resolve(response);
-};
 
 // Get the root page
 const fetchAll = () => {
