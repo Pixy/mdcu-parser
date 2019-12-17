@@ -1,4 +1,0 @@
-{
-  "plugins": ["security"],
-  "extends": ["ornikar", "ornikar/node", "plugin:security/recommended"]
-}
