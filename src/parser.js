@@ -22,13 +22,13 @@ async function initParser() {
   // Then, fetch all root series
   fetchSeries().then(async () => {
     const series = await Serie.find({})
-    // J'ai series rempli ici que si je laisse la ligne 50.
     console.log(series)
   })
 }
 
 const fetchSeries = async () => {
   const $ = await rp(rootPage)
+  const series = []
 
   $('div.p-y-5').each((_, el) => {
     const attrs = $(el)
@@ -38,7 +38,7 @@ const fetchSeries = async () => {
     // Save IDs and urls in array
     if (attrs !== undefined) {
       const serieUrl = `${baseSerieUrl}${attrs.series_collect_id}`
-      Serie.create({
+      series.push({
         id: attrs.series_collect_id,
         title: attrs.title,
         url: serieUrl,
@@ -46,6 +46,5 @@ const fetchSeries = async () => {
     }
   })
 
-  // Si je commente la ligne suivante, alors que n'aurais rien dans le Serie.find({}) du then
-  const series = await Serie.find({})
+  await Serie.create(series)
 }
