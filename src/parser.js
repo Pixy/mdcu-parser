@@ -20,10 +20,24 @@ async function initParser() {
   await Serie.deleteMany({})
 
   // Then, fetch all root series
-  fetchSeries().then(async () => {
-    const series = await Serie.find({})
-    console.log(series)
-  })
+  await fetchSeries()
+    .then(async () => {
+      const series = await Serie.find({})
+      return series
+    })
+    .then(async (series) => {
+      // series.forEach(async (serie) => {
+      //   const volumes = await fetchVolumes(serie)
+      //   // console.log(volumes)
+      // })
+      const volumes = await fetchVolumes(series[0])
+      series[0].volumes = volumes
+      series[0].save()
+      // console.log(volumes)
+    })
+    .catch((err) => {
+      console.log(err)
+    })
 }
 
 const fetchSeries = async () => {
@@ -47,4 +61,47 @@ const fetchSeries = async () => {
   })
 
   await Serie.create(series)
+}
+
+const fetchVolumes = async (serie) => {
+  const $ = await rp({
+    uri: serie.url,
+    transform(body) {
+      return cheerio.load(body)
+    },
+  })
+
+  const booksUrls = []
+  const volumes = []
+  $('div.col-4 > div > div:nth-child(2) > a').each((_, volume) => {
+    booksUrls.push($(volume).attr().href)
+  })
+
+  // Ici parcourir les booksUrl pour fetch le volume, créer le volume avec les infos + update la serie
+  booksUrls.forEach((bookUrl) => {
+    volumes.push(fetchVolume(bookUrl))
+  })
+
+  return Promise.all(volumes)
+}
+
+const fetchVolume = async (volumeUrl) => {
+  console.log(volumeUrl)
+  const $ = await rp({
+    uri: volumeUrl,
+    transform(body) {
+      return cheerio.load(body)
+    },
+  })
+
+  const title = $('.widget-item > h4:nth-child(1)').text()
+  // @TODO Transformer la date en format date mongo
+  const date = $('.meta')
+    .text()
+    .replace('Sortie le ', '')
+
+  return {
+    date,
+    title,
+  }
 }
