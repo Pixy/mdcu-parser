@@ -1,5 +1,6 @@
 const rp = require('request-promise')
 const cheerio = require('cheerio')
+const moment = require('moment')
 const rootPage = {
   uri:
     'https://www.mdcu-comics.fr/includes/comics/inc_select_collection_vf.php?collection_id=469',
@@ -15,6 +16,9 @@ const connection = require('./db/connection')
 
 connection.on('open', initParser)
 
+// Set moment locale
+moment.locale('fr')
+
 async function initParser() {
   // Always remove all data to have fresh DB
   await Serie.deleteMany({})
@@ -26,18 +30,19 @@ async function initParser() {
       return series
     })
     .then(async (series) => {
-      // series.forEach(async (serie) => {
-      //   const volumes = await fetchVolumes(serie)
-      //   // console.log(volumes)
-      // })
-      const volumes = await fetchVolumes(series[0])
-      series[0].volumes = volumes
-      series[0].save()
-      // console.log(volumes)
+      series.forEach(async (serie) => {
+        const volumes = await fetchVolumes(series[0])
+        serie.volumes = volumes
+        serie.save().catch((err) => {
+          console.log(err)
+        })
+      })
     })
     .catch((err) => {
       console.log(err)
     })
+
+  console.log('All done !')
 }
 
 const fetchSeries = async () => {
@@ -86,7 +91,6 @@ const fetchVolumes = async (serie) => {
 }
 
 const fetchVolume = async (volumeUrl) => {
-  console.log(volumeUrl)
   const $ = await rp({
     uri: volumeUrl,
     transform(body) {
@@ -96,9 +100,12 @@ const fetchVolume = async (volumeUrl) => {
 
   const title = $('.widget-item > h4:nth-child(1)').text()
   // @TODO Transformer la date en format date mongo
-  const date = $('.meta')
+  const formatedDate = $('.meta')
     .text()
     .replace('Sortie le ', '')
+    .replace('Aout', 'Août')
+
+  const date = moment(formatedDate, 'dddd DD MMMM YYYY').toDate()
 
   return {
     date,
