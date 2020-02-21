@@ -1,6 +1,7 @@
-- Aller sur la page principale
-- Récupérer les ID et les URLS des séries
-- Parcourir chaque série
-  - Pour chaque série, récupérer les URL des tomes et le nom de la série
-  - Parcourir les tomes
-    - Récupérer le titre et la date du tome
+# MDCU-PARSER
+✓ Récupérer la liste des comics pour enregistrer par serie chaque tome avec titre et date
+
+Reste à faire :
+- Créer une interface (express ?)
+- Récupérer tous les tomes triés par date (peu importe le volume)
+- Afficher les tomes sous forme de liste
