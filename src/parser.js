@@ -11,7 +11,7 @@ const rootPage = {
 const baseSerieUrl =
   'https://www.mdcu-comics.fr/includes/comics/inc_liste_comics_vf.php?series_collect_id='
 
-const Serie = require('./db/Serie')
+const { Serie, Volume } = require('./db/Serie')
 const connection = require('./db/connection')
 
 connection.on('open', initParser)
@@ -21,6 +21,7 @@ moment.locale('fr')
 
 async function initParser() {
   // Always remove all data to have fresh DB
+  await Volume.deleteMany({})
   await Serie.deleteMany({})
 
   // Then, fetch all root series
@@ -31,7 +32,7 @@ async function initParser() {
     })
     .then(async (series) => {
       series.forEach(async (serie) => {
-        const volumes = await fetchVolumes(series[0])
+        const volumes = await fetchVolumes(serie)
         serie.volumes = volumes
         serie.save().catch((err) => {
           console.log(err)

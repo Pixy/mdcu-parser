@@ -4,14 +4,18 @@
   "description": "mdcu parser for scrap books list",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "parse": "node src/parser.js",
+    "web": "./node_modules/.bin/http-server public --port 8000",
+    "api": "node src/server.js"
   },
   "dependencies": {
     "cheerio": "^1.0.0-rc.3",
+    "http-server": "^0.12.1",
     "moment": "^2.24.0",
+    "mongoose": "^5.9.1",
     "request": "^2.88.2",
     "request-promise": "^4.2.4",
-    "mongoose": "^5.9.1"
+    "restify": "^8.5.1"
   },
   "devDependencies": {
     "@commitlint/cli": "^8.3.5",
