@@ -10,6 +10,11 @@ const server = restify.createServer({
 server.use(restify.plugins.acceptParser(server.acceptable))
 server.use(restify.plugins.queryParser())
 server.use(restify.plugins.bodyParser())
+server.use(function crossOrigin(req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*')
+  res.header('Access-Control-Allow-Headers', 'X-Requested-With')
+  return next()
+})
 
 server.get('/', async (req, res, next) => {
   // const series = await Serie.find().sort({ 'volumes.date': 1 })
@@ -29,7 +34,6 @@ server.get('/', async (req, res, next) => {
       },
     },
   ])
-  console.log(volumes)
 
   res.send(volumes)
   return next()

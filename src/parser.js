@@ -63,6 +63,19 @@ const fetchSeries = async () => {
         title: attrs.title,
         url: serieUrl,
       })
+    } else {
+      const attrs = $(el)
+        .find('a')
+        .attr()
+
+      if (attrs !== undefined) {
+        const serieUrl = `${attrs.href}`
+        series.push({
+          id: Math.floor(Math.random() * 100),
+          title: attrs.title,
+          url: serieUrl,
+        })
+      }
     }
   })
 
@@ -79,16 +92,22 @@ const fetchVolumes = async (serie) => {
 
   const booksUrls = []
   const volumes = []
-  $('div.col-4 > div > div:nth-child(2) > a').each((_, volume) => {
-    booksUrls.push($(volume).attr().href)
-  })
 
-  // Ici parcourir les booksUrl pour fetch le volume, créer le volume avec les infos + update la serie
-  booksUrls.forEach((bookUrl) => {
-    volumes.push(fetchVolume(bookUrl))
-  })
+  if ($('div.col-4 > div > div:nth-child(2) > a').length > 0) {
+    $('div.col-4 > div > div:nth-child(2) > a').each((_, volume) => {
+      booksUrls.push($(volume).attr().href)
+    })
 
-  return Promise.all(volumes)
+    // Ici parcourir les booksUrl pour fetch le volume, créer le volume avec les infos + update la serie
+    booksUrls.forEach((bookUrl) => {
+      volumes.push(fetchVolume(bookUrl))
+    })
+
+    return Promise.all(volumes)
+  } else {
+    volumes.push(await fetchVolume(serie.url))
+    return volumes
+  }
 }
 
 const fetchVolume = async (volumeUrl) => {
