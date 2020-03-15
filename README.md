@@ -1,7 +1,30 @@
 # MDCU-PARSER
-✓ Récupérer la liste des comics pour enregistrer par serie chaque tome avec titre et date
 
-Reste à faire :
-- Créer une interface (express ?)
-- Récupérer tous les tomes triés par date (peu importe le volume)
-- Afficher les tomes sous forme de liste
+Le but est de parser la collection Marvel Now! du site https://www.mdcu-comics.fr/, afin de collecter tous les tomes regroupés par séries.
+Ensuite on les affiche par liste, triés par date.
+
+Comment utiliser le projet ?
+
+## Récupérer les infos du site.
+
+Prérequis, il faut un mongodb local installé et lancé.
+```sh
+npm install
+npm run parse
+```
+
+# Lancer le serveur API
+```sh
+npm run api
+```
+
+Et laisser tourner en background.
+
+# Lancer le site 
+```sh
+npm run web
+```
+
+Et accéder à http://localhost:8000/
+
+Et wouala =)
